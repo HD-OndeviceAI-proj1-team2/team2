@@ -1,0 +1,27 @@
+# 파이썬
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 실험 결과 (용량이 크고 사람마다 다름)
+data/logs/
+data/raw/
+
+# 학습된 모델 파일 (용량이 큼, 필요하면 따로 공유)
+*.pt
+*.onnx
+*.tflite
+
+# 편집기·운영체제
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 개인 설정·비밀 정보
+.env
+CLAUDE.local.md
+
+# OT 원본 PDF (다른 조 수강생 이름 포함 — docs/00-project-guide.md로 대신)
+*OT_온디바이스*.pdf

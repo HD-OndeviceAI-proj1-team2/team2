@@ -8,12 +8,12 @@
 1. **정식 문서는 깃허브 `docs/` 폴더 아래에 있습니다.**
 2. **폴더 구조와 규칙을 확인한 뒤에도 궁금한 점이 있으면 문의·건의 부탁드립니다.**
 3. **작업할 때는 [`docs/01-requirements.md`](docs/01-requirements.md)의 REQ(작업 요구사항) 표를 보시고, 직접 깃허브 이슈를 만들거나 이슈를 만들어 달라고 요청해 주세요.** (만드는 방법은 아래 4번)
-4. **[`docs/03-interface.md`](docs/03-interface.md)에 모듈끼리 주고받을 객체와 CSV 로그를 남기는 형식을 적어 두었습니다.** 코드는 `src/messages.py`(객체 정의)와 `src/csv_logger.py`(CSV 저장) 두 파일로 나눠 두었어요. 바꿔야 할 부분이 있으면 말씀해 주세요!
+4. **[`docs/03-interface.md`](docs/03-interface.md)에 클래스끼리 주고받을 데이터와 기록(DB) 형식, 핀 할당을 적어 두었습니다.** 코드는 `core/models.py`(데이터 형식)와 `logging_/event_logger.py`(DB·스냅샷 기록)에 있어요. 아직 문서와 코드가 다른 곳은 03번 문서 8번 '코드 반영 필요 목록'에 모아 두었어요. 바꿔야 할 부분이 있으면 말씀해 주세요!
 5. **`docs/04-test-cases.md`(테스트)와 `docs/05-fmea.md`(위험성 검토)는 테스트가 시작된 뒤에 채우는 문서입니다. 지금은 그대로 두세요!**
    - 04번: 기능이 중간중간 잘 동작하는지 확인하는 테스트 목록
    - 05번: 한 부분이 고장 났을 때 어떻게 알아채고 대비할지 정리한 표
 
-> 💡 기본적인 경보 상태와 전환 규칙은 깃허브에서 [`docs/02-state-machine.md`](docs/02-state-machine.md)를 열면 그림으로 볼 수 있어요.
+> 💡 경보 4단계(정상·주의·경보·대피)와 전환 규칙, 기준값은 깃허브에서 [`docs/02-state-machine.md`](docs/02-state-machine.md)를 열면 그림으로 볼 수 있어요.
 
 ---
 
@@ -28,7 +28,7 @@
 │  ├─ 00-project-guide.md   OT 가이드 요약 — 목표·일정·제출물·평가 기준 (최우선 기준)
 │  ├─ 01-requirements.md    요구사항 (REQ 번호)
 │  ├─ 02-state-machine.md   경보 단계·전환 규칙 (그림)
-│  ├─ 03-interface.md       모듈 간 데이터·CSV 로그 형식
+│  ├─ 03-interface.md       클래스 간 데이터·DB 기록 형식·핀 할당
 │  ├─ 04-test-cases.md      테스트 (테스트 시작 후 작성)
 │  ├─ 05-fmea.md            위험성 검토 (테스트 시작 후 작성)
 │  ├─ 06-system-design.md   구조·파이프라인·모델·부품 선정 근거
@@ -36,23 +36,23 @@
 │  ├─ 08-progress-log.md    수행 경과·문제 해결·피드백 기록 ← 그날그날 한 줄씩!
 │  ├─ 09-submission.md      제출물 5종·FINAL CHECKLIST 점검
 │  ├─ hardware/             BOM·회로도·구성도·사진 (세부 산출물)
-│  ├─ ADR/                  설계 결정 기록
-│  └─ meetings/             회의록
-├─ src/                   라즈베리파이 실행 코드 (역할별 폴더)
-│  ├─ messages.py · csv_logger.py   공통 객체·CSV 저장
-│  ├─ vision_rgb/  vision_thermal/  사람 인식 / 열화상 위험 ROI (SW/AI)
-│  ├─ sensors/  alerts/             가스 센서 / 부저·LED (HW)
-│  ├─ decision/                     상태 머신·대피로 (SW)
-│  └─ main.py                       전체 연결 (통합)
-├─ training/              모델 학습·경량화 (제출 필수)
-├─ mcu/                   MCU 코드 (보류)
-├─ tools/  tests/         보조 스크립트 / 자동 테스트
-├─ config/                기준값(thresholds.csv)·보정값
-├─ data/  models/         실험 데이터·모델 파일 (깃 제외)
+│  └─ ADR/                  설계 결정 기록
+├─ main.py                시작점 (저장소 루트에서 python main.py)
+├─ config.yaml            설정값 — 임계값·시간·핀·부저 주기 (숫자는 여기서만!)
+├─ requirements.txt       파이썬 패키지 목록
+├─ core/                  전체 흐름(controller) · 이벤트 전달(event_bus) · 데이터 형식(models)
+├─ sensors/               일반 카메라 · 열화상(MLX90640) · 가스 센서 입력 (HW)
+├─ vision/                YOLO 사람·불·연기 인식 · 열화상 고온 후보 구역 (SW/AI)
+├─ decision/              판단 규칙 · 경보 단계 · 위험 구역(ROI) · 작업자 접근 (SW/AI)
+├─ actuators/             부저 · LED · 스피커 · 출구 LED (HW)
+├─ logging_/              DB·스냅샷 기록 (밑줄은 일부러 — 아래 6번)
+├─ models/                학습된 모델 파일 (깃 제외)
+├─ tests/                 자동 테스트 (pytest)
+├─ logs/                  실행하면 생기는 DB·사진 (깃 제외)
 └─ .github/               이슈·PR 템플릿
 ```
 
-각 폴더 안의 `README.md`에 그 폴더의 역할·담당·넣을 것이 적혀 있어요.
+**한 번의 반복에서 일어나는 일:** 센서 읽기(`sensors`) → 분석(`vision`) → 판단(`decision`) → `EventBus`로 알림 발행 → 출력(`actuators`)·기록(`logging_`)이 각자 받아서 처리. 순서는 `core/controller.py`의 `loop()`에 주석으로 적혀 있어요.
 
 ## 2. 브랜치 규칙
 
@@ -82,7 +82,7 @@ git pull
 git switch -c feature/REQ-014-dynamic-roi
 
 # ③ 작업하고 커밋 (여러 번 OK)
-git add src/thermal_roi.py
+git add vision/thermal_analyzer.py
 git commit -m "[AI] REQ-014 고온 영역 ROI 생성 초안"
 
 # ④ 깃허브에 올리기
@@ -112,7 +112,9 @@ REQ에 없는 작업이 필요하면 먼저 팀장이나 통합·문서 담당�
 
 | 역할 | 종류 |
 |---|---|
-| `PM` `HW` `SW/AI` `DOC` | `feature` `bug` `docs` `test` `question` |
+| `PM` `HW` `SW/AI` `DOC` | `feature` `bug` `docs` `test` `question` `meeting` |
+
+**회의 기록:** 회의록 파일은 만들지 않고 이슈로 남겨요. Title은 `[회의] 11/26 주제`, 라벨은 `meeting`, 본문에는 정한 것·할 일(담당자)·다음 회의를 적어요. 회의에서 정한 일이 문서를 바꾸면, 그 PR이나 [`docs/08-progress-log.md`](docs/08-progress-log.md)에 회의 이슈 번호(`#12`)를 적어 주세요.
 
 ## 5. 커밋 메시지
 
@@ -120,7 +122,7 @@ REQ에 없는 작업이 필요하면 먼저 팀장이나 통합·문서 담당�
 
 | 태그 | 언제 |
 |---|---|
-| `[PM]` | 일정·회의록 |
+| `[PM]` | 일정·계획 |
 | `[HW]` | 배선·하드웨어 코드·핀맵 |
 | `[SW]` | 일반 소프트웨어 (출력, 상태 머신 등) |
 | `[AI]` | 인식 모델·열화상 처리 |
@@ -132,14 +134,15 @@ REQ에 없는 작업이 필요하면 먼저 팀장이나 통합·문서 담당�
 
 ## 6. 꼭 지켜 주세요
 
-- **인터페이스를 바꿀 때:** `src/messages.py`, `src/csv_logger.py`, `docs/03-interface.md`는 **같은 커밋에서 같이** 바꿔요. 다른 팀원 코드에 영향을 주니 바꾸기 전에 단톡에 한 번 알려 주세요.
-- **로그는 CSV로:** 로그는 `csv_logger.py`의 `CsvLogger`로 저장해요.
-- **올리면 안 되는 것:** `data/logs/`, `data/raw/`, 모델 가중치 파일(`*.pt`, `*.onnx`, `*.tflite`), 비밀번호·토큰. (`.gitignore`로 대부분 막아 뒀어요)
-- **파이썬 파일 이름:** 소문자와 밑줄만 (`thermal_roi.py`). 기본 모듈과 같은 이름(`csv.py`, `types.py`, `logging.py`) 금지 — import가 꼬여요.
-- **안전 로직은 끄지 않기:** 대피 래칭, 고장 표시 같은 안전 기능은 테스트 중에도 끈 채로 커밋하지 않아요.
-- **기준값은 `config/thresholds.csv`에서만:** 온도·시간 숫자를 코드에 직접 쓰지 않아요.
+- **인터페이스를 바꿀 때:** `core/models.py`와 `docs/03-interface.md`는 **같은 커밋에서 같이** 바꿔요. 다른 팀원 코드에 영향을 주니 바꾸기 전에 단톡에 한 번 알려 주세요.
+- **기록은 `EventLogger`로:** 경보 이벤트와 온도는 `logging_/event_logger.py`의 `EventLogger`가 SQLite DB(`logs/`)에 저장하고, 경보 순간 사진도 남겨요. 엑셀로 볼 리포트는 CSV로 내보내요.
+- **올리면 안 되는 것:** `logs/`(DB·사진), 모델 파일(`*.pt`, `*.onnx`, `*.tflite`, NCNN 변환 폴더), 비밀번호·토큰. (`.gitignore`로 대부분 막아 뒀어요)
+- **이름 짓기 (지금 코드 방식):** 클래스 `AlertEvaluator`처럼 대문자로 시작 · 메서드 `findHotZones`처럼 camelCase · 변수·파일·config 키 `release_hold_sec`처럼 소문자+밑줄.
+- **기본 모듈과 같은 이름 금지:** `logging`, `csv`, `types` 같은 이름의 파일·폴더를 만들면 import가 꼬여요. 그래서 기록 폴더가 `logging_`예요.
+- **안전 로직은 끄지 않기:** 경보·대피 래칭, 센서 고장 예외 처리·관제 로그 같은 안전 기능은 테스트 중에도 끈 채로 커밋하지 않아요.
+- **설정값은 `config.yaml`에서만:** 온도·시간·핀 번호를 코드에 직접 쓰지 않아요.
 - **막혔다 풀렸으면 08번에 한 줄:** 문제·원인·해결·결과를 [`docs/08-progress-log.md`](docs/08-progress-log.md)에 남겨 주세요. 평가 항목이에요.
-- **하드웨어:** 배선은 전원을 끄고. 발열패드는 켜 둔 채 자리를 비우지 않기.
+- **하드웨어:** 배선은 전원을 끄고. 캡톤 히터는 켜 둔 채 자리를 비우지 않기.
 
 ## 7. AI 도구 사용 규칙
 
@@ -160,13 +163,13 @@ Codex, Claude, Gemini를 써도 좋아요. 팀 규칙을 AI가 알 수 있게 �
 웹 채팅은 저장소 파일을 자동으로 읽지 못해요. 대화를 시작할 때 아래처럼 해 주세요.
 
 1. `AGENTS.md` 파일을 **첨부**하거나 내용을 복사해 붙여 넣기
-2. 작업과 관련된 문서도 같이 첨부 (예: 인식 작업이면 `01-requirements.md`, `03-interface.md`, `src/messages.py`)
+2. 작업과 관련된 문서도 같이 첨부 (예: 인식 작업이면 `01-requirements.md`, `03-interface.md`, `core/models.py`)
 3. 첫 메시지에 이렇게 쓰기:
    > 첨부한 AGENTS.md의 규칙을 따라 줘. 나는 [역할]이고, 지금 하려는 작업은 [REQ-번호: 할 일]이야.
 
 ### 7-3. AI 결과물을 쓸 때 사람이 확인할 것
 - AI가 만든 코드도 **내가 설명할 수 있어야** 커밋해요. 모르는 부분은 AI에게 "왜 이렇게 했는지" 물어보고 이해한 뒤에 올려요.
-- AI가 `messages.py`나 `03-interface.md`를 바꾸려고 하면 멈추고 팀에 먼저 공유해요.
+- AI가 `core/models.py`나 `03-interface.md`를 바꾸려고 하면 멈추고 팀에 먼저 공유해요.
 - 라즈베리파이 성능, 센서 사양처럼 AI가 틀리기 쉬운 내용은 직접 확인해요.
 
 ## 8. 문의

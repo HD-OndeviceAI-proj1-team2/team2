@@ -16,7 +16,7 @@ body:
     attributes:
       label: 원래 어떻게 돼야 하나요
       description: 관련 REQ·TC 번호가 있으면 적어 주세요.
-      placeholder: T_SAFE 아래로 내려가면 한 번만 NORMAL로 바뀌어야 함 (REQ-013, TC-006)
+      placeholder: 원인이 사라지고 20초가 지난 뒤 한 번만 NORMAL로 바뀌어야 함 (REQ-013, TC-006)
     validations:
       required: true
 
@@ -34,5 +34,5 @@ body:
     id: log
     attributes:
       label: 로그 폴더·커밋
-      description: 문제가 기록된 CSV 로그 폴더와 코드 버전 (git log -1 --format=%h)
-      placeholder: data/logs/20261128_141500/ , a1b2c3d
+      description: 문제가 기록된 시각(KST)과 코드 버전 (git log -1 --format=%h). 스냅샷이 있으면 파일 이름도
+      placeholder: 2026-11-28 14:15 KST , a1b2c3d , logs/snapshots/1795..._L2.jpg

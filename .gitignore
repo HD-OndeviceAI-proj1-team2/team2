@@ -4,14 +4,17 @@ __pycache__/
 .venv/
 venv/
 
-# 실험 결과 (용량이 크고 사람마다 다름)
-data/logs/
-data/raw/
+# 실행 기록 (용량이 크고 사람마다 다름) — EventLogger가 자동 생성
+logs/
+*.db
+*.db-journal
+data/
 
 # 학습된 모델 파일 (용량이 큼, 필요하면 따로 공유)
 *.pt
 *.onnx
 *.tflite
+models/*_ncnn_model/
 
 # 편집기·운영체제
 .vscode/

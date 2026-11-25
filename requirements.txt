@@ -1,0 +1,8 @@
+numpy
+opencv-python
+pyyaml
+ultralytics
+gpiozero
+adafruit-circuitpython-mlx90640
+# picamera2는 Raspberry Pi OS에 기본 설치(apt)
+pytest

@@ -1,1 +1,59 @@
 # 임계값, 핀번호, 부저주기 등 설정값
+# 모두 예시입니다 ~~~~~~~~~~~~~~~~! 이런식으로 채우면 된다는 뜻..
+
+loop_interval_sec: 0.05
+
+thermal:
+  refresh_hz: 4            # MLX90640: 1, 2, 4, 8 등
+  normal_temp: 30.0        # 정상온도 (°C)
+  candidate_offset: 3.0    # 후보 구역 기준 = normal_temp + 3
+  candidate_rise: 1.0      # 이 변화율(°C/s) 이상이어도 후보
+  l1_offset: 5.0           # 경보 1 = normal_temp + 5
+  l3_temp: 60.0            # 경보 3
+  rise_rate: 2.0           # 경보 2 (°C/s)
+  min_pixels: 2
+  release_hold_sec: 5      # 정상이 이 시간 유지되면 위험구역 해제
+
+rgb:
+  width: 640
+  height: 480
+  fps: 15
+  backend: picamera2       # USB 카메라면 opencv
+  device: 0
+
+yolo:
+  model_path: models/yolo26n_ncnn_model
+  conf: 0.4
+  imgsz: 416
+  fire_min_conf: 0.5
+
+person_warning:
+  min_frames: 3
+  cooldown_sec: 5
+
+notifier:
+  buzzer_pin: 18
+  led_pins: {red: 5, green: 6, blue: 13}
+  buzzer_period:           # 초. null = 끔, 0 = 연속음
+    NORMAL: null
+    L1_HIGH: 1.0
+    L2_RAPID_RISE: 0.5
+    L3_CRITICAL: 0.2
+    L4_FIRE: 0
+
+response:
+  suppress_max_sec: 10
+  devices:
+    - name: 구역A
+      area: [0, 0, 16, 24]     # 열화상 좌표 x, y, w, h
+      gate_pin: 17
+      suppressor_pin: 27
+    - name: 구역B
+      area: [16, 0, 16, 24]
+      gate_pin: 22
+      suppressor_pin: 23
+
+logging:
+  db_path: logs/fire_guard.db
+  snapshot_dir: logs/snapshots
+  temp_interval_sec: 5

@@ -7,6 +7,6 @@
 | 파일 | 내용 | 상태 |
 |---|---|---|
 | `bom.csv` | 부품 목록 (엑셀로 열림) | 초안 |
-| `wiring.md` | 핀 연결표 · 배선 설명 ([03-interface](../03-interface.md) 6번 핀 할당표와 일치시킬 것) | 작성 예정 |
+| `wiring.md` | 핀 연결표 · 배선 설명 ([03-interface](../03-interface.md) 7번 핀 할당표, `config.yaml`의 핀 번호와 일치시킬 것) | 작성 예정 |
 | `diagrams/` | 하드웨어 구성도 · 회로도 이미지 (Fritzing·draw.io 원본 파일 포함) | 작성 예정 |
 | `photos/` | 조립 과정·완성 사진 (장당 1MB 이하로 줄여서) | 작성 예정 |
